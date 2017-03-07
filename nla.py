@@ -1,9 +1,6 @@
 #! /usr/bin/env python
-__author__ = 'sjp23'
 
-# Command line interface to ceda Near line tape (nla)
-#
-#
+__author__ = 'sjp23'
 #
 import cmd
 import nla_client_lib
@@ -12,21 +9,28 @@ import datetime
 from nla_client_settings import *
 
 class nla_cmd(cmd.Cmd):
+    """nla.py provides a command line interface to the NLA system that can be run from JASMIN.
 
+    It provides a number of commands for performing common tasks with the NLA, such as making a request
+    for files to be restored, changing the retention date of requests, checking a users quota, etc.
+
+    It is built upon the Python cmd library:  `cmd Support for line-oriented command interpreters <https://docs.python.org/2/library/cmd.html>`_,
+    and so each function takes the command argument (a string) as its input parameter.
+    """
     prompt = "NLA>>> "
 
     def do_ls(self, line):
         """List files in the NLA system.
 
           Files in the system go through various stages:
-          (U) "Unverified" files have been earmarked for tape only archive, but are not yet checked to see if the tape copy is valid.
-          (D) "On Disk" files have been verified as having a valid tape copy but have not had the original disk copy deleted.
-          (T) "On Tape" files have been removed from disk and only exist as a tape copy.
-          (A) "Restoring" files are in the process of Actively being restored to disk.
-          (R) "Restored" files are on restoreed to disk. A symlink from the original path points to its tempory location.
+
+          - **U**: "Unverified" files have been earmarked for tape only archive, but are not yet checked to see if the tape copy is valid.
+          - **D** "On Disk" files have been verified as having a valid tape copy but have not had the original disk copy deleted.
+          - **T** "On Tape" files have been removed from disk and only exist as a tape copy.
+          - **A** "Restoring" files are in the process of Actively being restored to disk.
+          - **R** "Restored" files are on restoreed to disk. A symlink from the original path points to its tempory location.
                         After the restore request has expired, the disk copy will be removed and the file will be
                         labelled as "On Tape" again.
-          (X) "Deleted" If a file is permanantly removed from the archive it is marked as deleted.
 
           Use the -stage option to list only files at certain stages.  e.g. to list unverified, on disk and on tape files:
              ls -stages=UDT
@@ -51,12 +55,14 @@ class nla_cmd(cmd.Cmd):
             print f["path"]
 
     def do_EOF(self, line):
-        """Quit"""
+        """Quit
+        """
         sys.exit()
     do_quit = do_EOF
 
     def do_pattern_request(self, line):
-        """Request files by matching the pattern string to a substring in the filename"""
+        """Request files by matching the pattern string to a substring in the filename
+        """
         date = datetime.datetime.now() + datetime.timedelta(days=30)
         date = date.strftime("%Y-%m-%d")
         response = nla_client_lib.make_request(patterns=line, retention=date)
@@ -64,7 +70,8 @@ class nla_cmd(cmd.Cmd):
         print response.content
 
     def do_listing_request(self, line):
-        """Make a tape request from a file listing. The file paths should be one per line and absolute."""
+        """Make a tape request from a file listing. The file paths should be one per line and absolute.
+        """
         date = datetime.datetime.now() + datetime.timedelta(days=30)
         date = date.strftime("%Y-%m-%d")
         files = open(line).readlines()
@@ -74,7 +81,8 @@ class nla_cmd(cmd.Cmd):
         print response.content
 
     def do_requests(self, line):
-        """List requests for current user."""
+        """List requests for current user.
+        """
         quota = nla_client_lib.list_requests()
         print "=== Requests info for %s ===" % quota["user"]
         print "Number of requests: %s" % len(quota["requests"])
@@ -96,7 +104,8 @@ class nla_cmd(cmd.Cmd):
         pass
 
     def do_retain(self, line):
-        """Set a retention date for a request."""
+        """Set a retention date for a request.
+        """
         req_id, extra_line = self.check_request_id(line)
         if req_id is None:
             return
@@ -104,7 +113,8 @@ class nla_cmd(cmd.Cmd):
         print setresponse
 
     def do_expire(self, line):
-        """Set a request as expired by setting the retention date to now."""
+        """Set a request as expired by setting the retention date to now.
+        """
         req_id, extra_line = self.check_request_id(line)
         if req_id is None:
             return
@@ -113,7 +123,8 @@ class nla_cmd(cmd.Cmd):
         print setresponse
 
     def do_notify_first(self, line):
-        """Set the email address to notify on the arrival of the first file from tape."""
+        """Set the email address to notify on the arrival of the first file from tape.
+        """
         req_id, extra_line = self.check_request_id(line)
         if req_id is None:
             return
@@ -121,7 +132,8 @@ class nla_cmd(cmd.Cmd):
         print setresponse
 
     def do_notify_last(self, line):
-        """Set the email address to notify on the arrival of the last file from tape."""
+        """Set the email address to notify on the arrival of the last file from tape.
+        """
         req_id, extra_line = self.check_request_id(line)
         if req_id is None:
             return
@@ -156,12 +168,13 @@ class nla_cmd(cmd.Cmd):
         for f in request_info["files"]:
             print f
 
-    def show_request(self, line):
+    def _show_request(self, line):
         """Show details of a request."""
         req_id, extra_line = self.check_request_id(line)
         if req_id is None:
             return
         request_info = nla_client_lib.show_request(req_id)
+        print request_info
         print "=== [%s] ===" % req_id
         if "label" in request_info:
             print "Label:                ", request_info["label"]
@@ -181,7 +194,7 @@ class nla_cmd(cmd.Cmd):
                 print request_info["files"][i]
 
     # alias for show_requests
-    do_req = show_request
+    do_req = _show_request
 
     @staticmethod
     def check_request_id(line):
