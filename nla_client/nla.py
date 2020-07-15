@@ -3,10 +3,9 @@
 __author__ = 'sjp23'
 #
 import cmd
-import nla_client_lib
+import nla_client.nla_client_lib as nla_client_lib
 import sys
 import datetime
-from nla_client_settings import *
 
 class nla_cmd(cmd.Cmd):
     """nla.py provides a command line interface to the NLA system that can be run from JASMIN.
@@ -52,7 +51,7 @@ class nla_cmd(cmd.Cmd):
         filelist = nla_client_lib.ls(match, stages)
         files = filelist["files"]
         for f in files:
-            print f["path"]
+            print(f["path"])
 
     def do_EOF(self, line):
         """Quit
@@ -66,8 +65,8 @@ class nla_cmd(cmd.Cmd):
         date = datetime.datetime.now() + datetime.timedelta(days=30)
         date = date.strftime("%Y-%m-%d")
         response = nla_client_lib.make_request(patterns=line, retention=date)
-        print response
-        print response.content
+        print(response)
+        print(response.content)
 
     def do_listing_request(self, line):
         """Make a tape request from a file listing. The file paths should be one per line and absolute.
@@ -77,28 +76,28 @@ class nla_cmd(cmd.Cmd):
         files = open(line).readlines()
         files = map(str.strip, files)
         response = nla_client_lib.make_request(files=files, retention=date)
-        print response
-        print response.content
+        print(response)
+        print(response.content)
 
     def do_requests(self, line):
         """List requests for current user.
         """
         quota = nla_client_lib.list_requests()
-        print "=== Requests info for %s ===" % quota["user"]
-        print "Number of requests: %s" % len(quota["requests"])
-        print "Quota size:         %s" % quota["size"]
-        print "Total request size: %s" % quota["used"]
-        print "Requests:  "
+        print("=== Requests info for %s ===" % quota["user"])
+        print("Number of requests: %s" % len(quota["requests"]))
+        print("Quota size:         %s" % quota["size"])
+        print("Total request size: %s" % quota["used"])
+        print("Requests:  ")
         for req in quota["requests"]:
-            print " {id:>6} {label:60}   [{retention}]".format(**req)
+            print(" {id:>6} {label:60}   [{retention}]".format(**req))
 
     def do_quota(self, line):
         """Check amount of quota remaining"""
         quota = nla_client_lib.list_requests()
-        print "=== Quota for %s ===" % quota["user"]
-        print "Quota size:         %s" % quota["size"]
-        print "Total used:         %s" % quota["used"]
-        print "Quota remaining:    %i" % (int(quota["size"]) - int(quota["used"]))
+        print("=== Quota for %s ===" % quota["user"])
+        print("Quota size:         %s" % quota["size"])
+        print("Total used:         %s" % quota["used"])
+        print("Quota remaining:    %i" % (int(quota["size"]) - int(quota["used"])))
 
     def emptyline(self):
         pass
@@ -110,7 +109,7 @@ class nla_cmd(cmd.Cmd):
         if req_id is None:
             return
         setresponse = nla_client_lib.update_request(req_id, retention=extra_line)
-        print setresponse
+        print(setresponse)
 
     def do_expire(self, line):
         """Set a request as expired by setting the retention date to now.
@@ -120,7 +119,7 @@ class nla_cmd(cmd.Cmd):
             return
         setresponse = nla_client_lib.update_request(req_id,
                                                     retention=datetime.datetime.now().strftime("%Y-%m-%d"))
-        print setresponse
+        print(setresponse)
 
     def do_notify_first(self, line):
         """Set the email address to notify on the arrival of the first file from tape.
@@ -129,7 +128,7 @@ class nla_cmd(cmd.Cmd):
         if req_id is None:
             return
         setresponse = nla_client_lib.update_request(req_id, notify_first=extra_line)
-        print setresponse
+        print(setresponse)
 
     def do_notify_last(self, line):
         """Set the email address to notify on the arrival of the last file from tape.
@@ -138,7 +137,7 @@ class nla_cmd(cmd.Cmd):
         if req_id is None:
             return
         setresponse = nla_client_lib.update_request(req_id, notify_last=extra_line)
-        print setresponse
+        print(setresponse)
 
     def do_notify(self, line):
         """Set the email address to notify for the arrivals of both the first and last file from tape.
@@ -147,7 +146,7 @@ class nla_cmd(cmd.Cmd):
         if req_id is None:
             return
         setresponse = nla_client_lib.update_request(req_id, notify_first=extra_line, notify_last=extra_line)
-        print setresponse
+        print(setresponse)
 
     def do_label(self, line):
         """Add a label to a request.
@@ -157,7 +156,7 @@ class nla_cmd(cmd.Cmd):
         if req_id is None:
             return
         setresponse = nla_client_lib.update_request(req_id, label=extra_line)
-        print setresponse
+        print(setresponse)
 
     def do_requested_files(self, line):
         """List the files in a request."""
@@ -166,7 +165,7 @@ class nla_cmd(cmd.Cmd):
             return
         request_info = nla_client_lib.show_request(req_id)
         for f in request_info["files"]:
-            print f
+            print(f)
 
     def _show_request(self, line):
         """Show details of a request."""
@@ -174,24 +173,24 @@ class nla_cmd(cmd.Cmd):
         if req_id is None:
             return
         request_info = nla_client_lib.show_request(req_id)
-        print request_info
-        print "=== [%s] ===" % req_id
+        print(request_info)
+        print("=== [%s] ===" % req_id)
         if "label" in request_info:
-            print "Label:                ", request_info["label"]
+            print("Label:                ", request_info["label"])
         if "request_date" in request_info:
-            print "Request date:         ", request_info["request_date"]
+            print("Request date:         ", request_info["request_date"])
         if "retention" in request_info:
-            print "Retention:            ", request_info["retention"]
+            print("Retention:            ", request_info["retention"])
         if "notify_on_first_file" in request_info:
-            print "notify_on_first_file: ", request_info["notify_on_first_file"]
+            print("notify_on_first_file: ", request_info["notify_on_first_file"])
         if "notify_on_last_file" in request_info:
-            print "notify_on_last_file:  ", request_info["notify_on_last_file"]
-        print self.request_status(request_info)
+            print("notify_on_last_file:  ", request_info["notify_on_last_file"])
+        print(self.request_status(request_info))
 
         if "files" in request_info:
-            print "%s files in request" % len(request_info["files"])
+            print("%s files in request" % len(request_info["files"]))
             for i in range(min(5,len(request_info["files"]))):
-                print request_info["files"][i]
+                print(request_info["files"][i])
 
     # alias for show_requests
     do_req = _show_request
@@ -201,12 +200,12 @@ class nla_cmd(cmd.Cmd):
         """check the first element of a line is a valid request id."""
         bits = line.strip().split()
         if len(bits) == 0:
-            print "First argument needs to be a request id."
+            print("First argument needs to be a request id.")
             return None, None
         try:
             request_number = int(bits[0])
         except ValueError:
-            print "%s not a valid request id - they should be integers. " % bits[0]
+            print("%s not a valid request id - they should be integers. " % bits[0])
             return None, None
 
         # check in request list
@@ -216,7 +215,7 @@ class nla_cmd(cmd.Cmd):
             for req in quota["requests"]:
                 valids.append(req["id"])
         if request_number not in valids:
-            print "%s is not a current request number. Valid ids are %s" % (request_number, valids)
+            print("%s is not a current request number. Valid ids are %s" % (request_number, valids))
             return None, None
 
         return request_number, " ".join(bits[1:])
@@ -229,10 +228,10 @@ class nla_cmd(cmd.Cmd):
             return "Status: Active (StorageD request started %s)" % request_info["storaged_request_start"]
         else:
             return "Status: On disk (StorageD request ran from %s to %s)" % (request_info["storaged_request_start"],
-                                                                        request_info["storaged_request_end"])
+             request_info["storaged_request_end"])
 
 
-if __name__ == "__main__":
+def main():
     C = nla_cmd()
 
     # if arguments then just do one command
@@ -241,3 +240,7 @@ if __name__ == "__main__":
         sys.exit()
 
     C.cmdloop("===========================\nCEDA Near line tape utility.\n")
+
+
+if __name__ == "__main__":
+    main()

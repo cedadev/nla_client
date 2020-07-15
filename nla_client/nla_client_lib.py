@@ -8,7 +8,7 @@ import os
 import requests
 import json
 
-from nla_client_settings import *
+from nla_client.nla_client_settings import NLA_SERVER_URL
 
 user = os.environ["USER"]
 baseurl = NLA_SERVER_URL
@@ -85,7 +85,7 @@ def make_request(patterns=None, retention=None, files=None, label=None):
     if label:
         data["label"] = label
     response = requests.post(url, data=json.dumps(data))
-    print response.status_code, response.json()
+    print(response.status_code, response.json())
     return response
 
 def update_request(request_id, retention=None, label=None, notify_first=None, notify_last=None):
@@ -188,7 +188,3 @@ def show_request(request_number):
         return response.json()
     else:
         return None
-
-
-
-
