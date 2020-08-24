@@ -74,7 +74,7 @@ class nla_cmd(cmd.Cmd):
         date = datetime.datetime.now() + datetime.timedelta(days=30)
         date = date.strftime("%Y-%m-%d")
         files = open(line).readlines()
-        files = map(str.strip, files)
+        files = list(map(str.strip, files))
         response = nla_client_lib.make_request(files=files, retention=date)
         print(response)
         print(response.content)
