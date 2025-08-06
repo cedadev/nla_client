@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='nla_client',
-    version='0.1.2',
+    version='0.1.3',
     packages=['nla_client'],
     install_requires=['requests',
                       'python_dateutil',

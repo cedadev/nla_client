@@ -8,7 +8,7 @@ import os
 import requests
 import json
 
-from nla_client.nla_client_settings import NLA_SERVER_URL
+from nla_client.nla_client_settings import NLA_SERVER_URL, VERIFY_CERT
 
 user = os.environ["USER"]
 baseurl = NLA_SERVER_URL
@@ -47,7 +47,7 @@ def ls(match, stages):
        :rtype: Dictionary
        """
     url = baseurl + "/api/v1/files?match=%s&stages=%s" % (match, stages)
-    response = requests.get(url)
+    response = requests.get(url, verify=VERIFY_CERT)
     return response.json()
 
 def make_request(patterns=None, retention=None, files=None, label=None):
@@ -84,7 +84,7 @@ def make_request(patterns=None, retention=None, files=None, label=None):
         data["retention"] = retention
     if label:
         data["label"] = label
-    response = requests.post(url, data=json.dumps(data))
+    response = requests.post(url, data=json.dumps(data), verify=VERIFY_CERT)
     return response
 
 def update_request(request_id, retention=None, label=None, notify_first=None, notify_last=None):
@@ -122,7 +122,7 @@ def update_request(request_id, retention=None, label=None, notify_first=None, no
         data["notify_on_first_file"] = notify_first
     if notify_last is not None:
         data["notify_on_last_file"] = notify_last
-    response = requests.put(url, data=json.dumps(data))
+    response = requests.put(url, data=json.dumps(data), verify=VERIFY_CERT)
     return response
 
 def list_requests():
@@ -153,7 +153,7 @@ def list_requests():
 
        :returntype: Dictionary"""
     url = baseurl + "/api/v1/quota/%s" % user
-    response = requests.get(url)
+    response = requests.get(url, verify=VERIFY_CERT)
     if response.status_code == 200:
         return response.json()
     else:
@@ -182,7 +182,7 @@ def show_request(request_number):
 
     """
     url = baseurl + "/api/v1/requests/%s" % request_number
-    response = requests.get(url)
+    response = requests.get(url, verify=VERIFY_CERT)
     if response.status_code == 200:
         return response.json()
     else:
