@@ -11,4 +11,4 @@ if TEST_VERSION:
 else:
     NLA_SERVER_URL = "http://nla.ceda.ac.uk/nla_control"
 
-VERIFY_CERT = True
+VERIFY_CERT = False
