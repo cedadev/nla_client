@@ -14,7 +14,6 @@ metadata:
     - url: "https://help.ceda.ac.uk/article/265-nla"
       title: "NLA client installation instructions"
       icon: externalLink
-  links: 
     - url: "https://cedadev.github.io/django-nla_control/docs/build/html/index.html"
       title: "NLA client user documentation"
       icon: externalLink
