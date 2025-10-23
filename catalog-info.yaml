@@ -1,0 +1,29 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: nla-client
+  description: "Enables registered users to access NLA functionality from the command line."
+  tags:
+    - "priority:high"
+    - "visibility:private"
+    - "manager:sam-pepler"
+    - "deputy-manager:matthew-paice"
+    - "review:passed"
+  links: 
+    - url: "https://help.ceda.ac.uk/article/265-nla"
+      title: "NLA client installation instructions"
+      icon: externalLink
+  links: 
+    - url: "https://cedadev.github.io/django-nla_control/docs/build/html/index.html"
+      title: "NLA client user documentation"
+      icon: externalLink
+spec:
+  type: library
+  owner: group:default/developers
+  lifecycle: production
+  system: system:default/nla
+  dependsOn:
+    - resource:default/nla-db
+    - resource:default/nla-user-db
+    - component:default/django-nla-control
